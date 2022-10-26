@@ -16,6 +16,13 @@ app = FastAPI()
 async def index():
     return {'Mensagem':'Seja bem vindo!'}
 
+@app.get('/vendas/{item_id}')
+async def get_vendas(item_id: int):
+    if item_id in vendas:
+        return vendas[item_id]
+    else:
+        raise HTTPException(status_code=404, detail='Item not found')
+
 
 class Item(BaseModel):
     Produto: str
@@ -23,9 +30,19 @@ class Item(BaseModel):
     Valor: float
     Total: float
 
-
 @app.post('/items/')
 async def create_item(item: Item):
     vendas[len(vendas) + 1] = {
-
+        'Produto': item.Produto,
+        'Quantidade': item.Quantidade,
+        'Valo': item.Valor,
+        'Total': item.Quantidade * item.Valor
     }
+    return item
+
+@app.get('/pesquisa/')
+def read_items(init: int = 1, limit: int = 5):
+    res = {}
+    for key, val in vendas.items():
+        res = {key:val}
+    return res

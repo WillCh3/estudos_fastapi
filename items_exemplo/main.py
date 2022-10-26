@@ -8,5 +8,6 @@ async def index():
 
 @app.get('/itens/{item_id}')
 async def get_item(item_id: int):
+    
     return {'Item_id': item_id}
 
