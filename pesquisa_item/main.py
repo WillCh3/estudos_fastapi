@@ -43,6 +43,9 @@ async def create_item(item: Item):
 @app.get('/pesquisa/')
 def read_items(init: int = 1, limit: int = 5):
     res = {}
-    for key, val in vendas.items():
-        res = {key:val}
-    return res
+    if init <= 0 or limit > len(vendas):
+        raise HTTPException(status_code=404, detail='Item not found')
+    else:
+        for item in range(init, limit + 1):
+            res[item] = vendas[1]
+        return res
