@@ -20,15 +20,14 @@ class Item(BaseModel):
     Valor: float
     Total: float
 
-class User_out(BaseModel):
-    Produto: str
-    Valor: float
-    Total: float
-
 
 @app.get('/')
 async def index():
     return {'Mensagem':'Seja bem vindo!'}
+
+@app.get('/items')
+async def list_items():
+    return vendas
 
 @app.get('/vendas/{item_id}', response_model=Item, response_model_exclude={'Quantidade'})
 async def get_vendas(item_id: int):
@@ -49,9 +48,7 @@ async def create_item(item: Item):
     return item
 
 
-@app.get('/items')
-async def list_items():
-    return vendas
+
 
 
 @app.get('/pesquisa/')
