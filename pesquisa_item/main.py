@@ -49,7 +49,7 @@ async def create_item(item: Item):
     return item
 
 
-@app.get('/items', response_model=Item, response_model_exclude={'Quantidade'})
+@app.get('/items')
 async def list_items():
     return vendas
 
