@@ -12,16 +12,6 @@ vendas = {1:{'Produto':'Televisor 55', 'Quantidade': 5, 'Valor':3.500, 'Total':1
 
 app = FastAPI()
 
-@app.get('/')
-async def index():
-    return {'Mensagem':'Seja bem vindo!'}
-
-@app.get('/vendas/{item_id}')
-async def get_vendas(item_id: int):
-    if item_id in vendas:
-        return vendas[item_id]
-    else:
-        raise HTTPException(status_code=404, detail='Item not found')
 
 
 class Item(BaseModel):
@@ -30,7 +20,25 @@ class Item(BaseModel):
     Valor: float
     Total: float
 
-@app.post('/items/')
+class User_out(BaseModel):
+    Produto: str
+    Valor: float
+    Total: float
+
+
+@app.get('/')
+async def index():
+    return {'Mensagem':'Seja bem vindo!'}
+
+@app.get('/vendas/{item_id}', response_model=Item, response_model_exclude={'Quantidade'})
+async def get_vendas(item_id: int):
+    if item_id in vendas:
+        return vendas[item_id]
+    else:
+        raise HTTPException(status_code=404, detail='Item not found')
+
+
+@app.post('/items')
 async def create_item(item: Item):
     vendas[len(vendas) + 1] = {
         'Produto': item.Produto,
@@ -40,12 +48,31 @@ async def create_item(item: Item):
     }
     return item
 
+
+@app.get('/items', response_model=Item, response_model_exclude={'Quantidade'})
+async def list_items():
+    return vendas
+
+
 @app.get('/pesquisa/')
-def read_items(init: int = 1, limit: int = 5):
-    res = {}
-    if init <= 0 or limit > len(vendas):
-        raise HTTPException(status_code=404, detail='Item not found')
+async def read_items(init: int = 1, limit: int = 3 ):
+    resp ={}
+    for item in range(init, limit + 1):
+        resp[item] = vendas[item]
+    return resp
+
+
+@app.get('/pesquisa/{id_item}')
+async def get_item(id_item: int):
+    if id_item in vendas:
+        res = vendas.get(id_item)
     else:
-        for item in range(init, limit + 1):
-            res[item] = vendas[1]
-        return res
+        raise HTTPException(status_code=404, detail="Item not found")
+    return res
+
+@app.delete('/delete/{id_item}')
+async def delete(id_item: int):
+    if id_item in vendas:
+        return vendas.pop(id_item)
+    else:
+        raise HTTPException(status_code=404, detail="Item not found")
