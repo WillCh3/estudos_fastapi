@@ -20,6 +20,10 @@ class Item(BaseModel):
     Valor: float
     Total: float
 
+class ItemResponse(BaseModel):
+    Produto: str
+    Quantidade: int
+    Valor: float
 
 @app.get('/')
 async def index():
@@ -29,7 +33,7 @@ async def index():
 async def list_items():
     return vendas
 
-@app.get('/vendas/{item_id}', response_model=Item, response_model_exclude={'Quantidade'})
+@app.get('/vendas/{item_id}', response_model=ItemResponse)
 async def get_vendas(item_id: int):
     if item_id in vendas:
         return vendas[item_id]
@@ -54,7 +58,7 @@ async def delete(id_item: int):
     else:
         raise HTTPException(status_code=404, detail="Item not found")
 
-@app.get('/pesquisa/')
+@app.get('/vendas')
 async def read_items(init: int = 1, limit: int = 3 ):
     resp ={}
     for item in range(init, limit + 1):
@@ -62,7 +66,7 @@ async def read_items(init: int = 1, limit: int = 3 ):
     return resp
 
 
-@app.get('/pesquisa/{id_item}')
+@app.get('/vendas/{id_item}')
 async def get_item(id_item: int):
     if id_item in vendas:
         res = vendas.get(id_item)
