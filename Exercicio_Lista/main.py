@@ -41,5 +41,6 @@ def create_item(item: Item):
 
 @app.put('/items/{item_id}')
 def update_item(item_id: int):
-    
+    if
     return vendas
+
