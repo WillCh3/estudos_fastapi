@@ -15,6 +15,13 @@ class Item(BaseModel):
     valor: float
     total: float
 
+class ItemUpdate(BaseModel):
+    id: Optional[str] = None
+    produto: Optional[str] = None
+    quantidade: Optional[int] = None
+    valor: Optional[float] = None
+    total: Optional[float] = None
+
 class ItemResponse(BaseModel):
     produto: str
     quantidade: int
@@ -39,14 +46,20 @@ async def create_item(item: Item):
     return item
 
 @app.put('/items/{item_id}')
-async def update_item(item_id: str):
-    return vendas
+async def update_item(item_id: str, itemup: ItemUpdate):
+    for key, item in enumerate(vendas):
+        if item_id == item.id:
+            vendas.pop(key)
+            itemup.id = item_id
+            vendas.insert(key, itemup)
+            print(itemup)
+            return itemup
+    raise HTTPException(status_code=404, detail='Item not found')
 
 @app.delete('/items/{item_id}')
 async def delete(item_id: str):
     for key, item in enumerate(vendas):
         if item_id == item.id:
-            print(key)
             return vendas.pop(key)
     raise HTTPException(status_code=404, detail='Item not found')
 
