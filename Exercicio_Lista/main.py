@@ -37,7 +37,7 @@ async def get_item(item_id: str):
     for item in vendas:
         if item_id == item.id:
             return item
-        raise HTTPException(status_code=404, detail='Item not found')
+    raise HTTPException(status_code=404, detail='Item not found')
 
 @app.post('/items')
 async def create_item(item: Item):
