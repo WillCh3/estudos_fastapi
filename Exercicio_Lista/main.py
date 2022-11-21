@@ -13,7 +13,7 @@ class Item():
     produto: str
     quantidade: int
     valor: int
-    total: Optional[int]
+    total: int
 
 class ItemRequest(BaseModel):
     produto: Optional[str] = None
@@ -21,9 +21,9 @@ class ItemRequest(BaseModel):
     valor: Optional[int] = None
 
 class ItemResponse(BaseModel):
+    id: UUID
     produto: str
     total: int
-    id: UUID
 
 vendas: List[Item] = []
 
@@ -31,41 +31,52 @@ vendas: List[Item] = []
 async def get_itens():
     return vendas
 
+
 @app.get('/items/{item_id}', response_model=ItemResponse)
-async def get_item(item_id: UUID,):
+async def get_item(item_id: UUID):
     for item in vendas:
-        if item_id == item.id:
-            return item
-    raise HTTPException(status_code=404, detail='Item not found')
+        print(item.produto)
+        print(f'\n\n{Item}')
+    #     if item_id == item.id:
+    #         return item
+    # raise HTTPException(status_code=404, detail='Item not found')
+
 
 @app.post('/items')
 async def create_item(item_request: ItemRequest):
     item = Item()
     item.id = uuid4()
-    item.total = item_request.quantidade * item_request.valor
     item.produto = item_request.produto
     item.quantidade = item_request.quantidade
     item.valor = item_request.valor
+    item.total = item_request.quantidade * item_request.valor
     vendas.append(item)
     raise HTTPException(status_code=201, detail='Created')
 
+
 @app.put('/items/{item_id}')
-async def update_item(item_id: UUID, itemup: ItemRequest):
+async def update_item(item_id: UUID, item_request: ItemRequest):
+    item = Item()
     for key, item in enumerate(vendas):
         if item_id == item.id:
             vendas.pop(key)
-            itemup.id = item_id
-            itemup.total = itemup.quantidade * itemup.valor
-            vendas.insert(key, itemup)
-            return itemup
+            item.id = item_id
+            item.produto = item_request.produto
+            item.quantidade = item_request.quantidade
+            item.valor = item_request.valor
+            item.total = item_request.quantidade * item_request.valor
+            vendas.insert(key, item)
+            return item
     raise HTTPException(status_code=404, detail='Item not found')
+
 
 @app.delete('/items/{item_id}')
 async def delete(item_id: UUID,):
     for key, item in enumerate(vendas):
         if item_id == item.id:
-            vendas.pop(key)
-            raise HTTPException(status_code=204, detail='resource deleted successfully') 
+            
+            return vendas.pop(key)
+            #raise HTTPException(status_code=204, detail='resource deleted successfully') 
 
     raise HTTPException(status_code=404, detail='Item not found')
 
