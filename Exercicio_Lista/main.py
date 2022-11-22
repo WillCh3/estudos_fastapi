@@ -35,11 +35,10 @@ async def get_itens():
 @app.get('/items/{item_id}', response_model=ItemResponse)
 async def get_item(item_id: UUID):
     for item in vendas:
-        print(item.produto)
-        print(f'\n\n{Item}')
-    #     if item_id == item.id:
-    #         return item
-    # raise HTTPException(status_code=404, detail='Item not found')
+        if item_id == item.id:
+            print(item)
+            return dict(vendas[0])
+    raise HTTPException(status_code=404, detail='Item not found')
 
 
 @app.post('/items')
@@ -74,9 +73,8 @@ async def update_item(item_id: UUID, item_request: ItemRequest):
 async def delete(item_id: UUID,):
     for key, item in enumerate(vendas):
         if item_id == item.id:
-            
             return vendas.pop(key)
-            #raise HTTPException(status_code=204, detail='resource deleted successfully') 
+            raise HTTPException(status_code=204, detail='resource deleted successfully') 
 
     raise HTTPException(status_code=404, detail='Item not found')
 
