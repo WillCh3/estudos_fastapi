@@ -36,8 +36,13 @@ async def get_itens():
 async def get_item(item_id: UUID):
     for item in vendas:
         if item_id == item.id:
-            print(item)
-            return dict(vendas[0])
+            prod ={
+                "id": item.id,
+                "produto": item.produto,
+                "total": item.total 
+            }
+            print(prod)
+            return prod
     raise HTTPException(status_code=404, detail='Item not found')
 
 
