@@ -44,7 +44,7 @@ async def get_item(item_id: UUID):
             print(prod)
             return prod
     raise HTTPException(status_code=404, detail='Item not found')
-
+#commit
 
 @app.post('/items')
 async def create_item(item_request: ItemRequest):
