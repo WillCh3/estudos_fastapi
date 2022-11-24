@@ -1,12 +1,21 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from uuid import uuid4, UUID
+from enum import Enum
 from typing import List, Optional
 import uvicorn
 
 
 app = FastAPI()
 
+class TypeDoc(str, Enum):
+    cnh_front = "cnh_frente"
+    cnh_back = "cnh_verso"
+    rg_front = "rg_frente"
+    rg_back = "rg_verso"
+    selfie = "selfie"
+    social_contract = "contrato_social"
+    letter_of_attorney = "procuracao"
 
 class Item():
     id: UUID 
@@ -20,6 +29,7 @@ class ItemRequest(BaseModel):
     quantidade: Optional[int] = None
     valor: Optional[int] = None
 
+
 class ItemResponse(BaseModel):
     id: UUID
     produto: str
@@ -28,7 +38,7 @@ class ItemResponse(BaseModel):
 vendas: List[Item] = []
 
 @app.get('/items')
-async def get_itens():
+async def get_itens(teste: TypeDoc):
     return vendas
 
 
@@ -41,7 +51,6 @@ async def get_item(item_id: UUID):
                 "produto": item.produto,
                 "total": item.total 
             }
-            print(prod)
             return prod
     raise HTTPException(status_code=404, detail='Item not found')
 #commit
@@ -55,7 +64,8 @@ async def create_item(item_request: ItemRequest):
     item.valor = item_request.valor
     item.total = item_request.quantidade * item_request.valor
     vendas.append(item)
-    raise HTTPException(status_code=201, detail='Created')
+    return item
+    
 
 
 @app.put('/items/{item_id}')
@@ -78,7 +88,7 @@ async def update_item(item_id: UUID, item_request: ItemRequest):
 async def delete(item_id: UUID,):
     for key, item in enumerate(vendas):
         if item_id == item.id:
-            return vendas.pop(key)
+            #return vendas.pop(key)
             raise HTTPException(status_code=204, detail='resource deleted successfully') 
 
     raise HTTPException(status_code=404, detail='Item not found')
