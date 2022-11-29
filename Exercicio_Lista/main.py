@@ -38,7 +38,7 @@ class ItemResponse(BaseModel):
 vendas: List[Item] = []
 
 @app.get('/items')
-async def get_itens(teste: TypeDoc):
+async def get_itens():
     return vendas
 
 
@@ -95,4 +95,4 @@ async def delete(item_id: UUID,):
 
 
 if __name__ =='__main__':
-    uvicorn.run(app)
+    uvicorn.run("main:app", reload=True)
