@@ -1,32 +1,36 @@
 from fastapi.testclient import TestClient
 from .main import app
 
+
 client = TestClient(app)
 
-data = {}
-
-dados = { "produto": "pacote figurinha", "quantidade": 200, "valor": 3.0}
-
-def test_read_itens():
-    response = client.get('/items')
-    assert response.status_code == 200
-    assert response.json() == []
+data = {
+        "id": 1,
+        "produto": "pacote figurinha", 
+        "quantidade": 200,
+        "valor": 3.0,
+        "total": 600
+        }
 
 
 def test_create_item():
-    response = client.post('/items', json=dados)
+    response = client.post('/items/', json=data)
     assert response.status_code == 201
     assert response.json() == {"detail": "Created"}
+
+
+def test_read_itens():
+    response = client.get('/items/')
+    assert response.status_code == 200
+    assert data == response.json()[0]
     
 
 def test_edit_item():
-    response = client.put("/items/{data['id']}", json=dados )
+    response = client.put("/items/1", json={"produto": "teste", "quantidade": 0, "valor": 0})
     assert response.status_code == 200
-    data = response.json()
-    assert data['produto'] == 'pacote figurinha'
+    assert response.json() == {'id': 1, 'produto': 'teste', 'quantidade': 0, 'valor': 0, 'total': 0}
 
 def test_delete_item():
-    response = client.delete('/items/')
+    response = client.delete('/items/1', json=data)
     response.status_code == 200
-
-#commit
+    response.json() == {'id': 1, 'produto': 'teste', 'quantidade': 0, 'valor': 0, 'total': 0}

@@ -9,7 +9,7 @@ app = FastAPI()
 
 
 class Item():
-    id: UUID 
+    id: int 
     produto: str
     quantidade: int
     valor: int
@@ -21,19 +21,19 @@ class ItemRequest(BaseModel):
     valor: Optional[int] = None
 
 class ItemResponse(BaseModel):
-    id: UUID
+    id: int
     produto: str
     total: int
 
 vendas: List[Item] = []
 
-@app.get('/items')
+@app.get('/items/')
 async def get_itens():
     return vendas
 
 
 @app.get('/items/{item_id}', response_model=ItemResponse)
-async def get_item(item_id: UUID):
+async def get_item(item_id: int):
     for item in vendas:
         if item_id == item.id:
             prod ={
@@ -46,10 +46,10 @@ async def get_item(item_id: UUID):
     raise HTTPException(status_code=404, detail='Item not found')
 #commit
 
-@app.post('/items')
+@app.post('/items/')
 async def create_item(item_request: ItemRequest):
     item = Item()
-    item.id = uuid4()
+    item.id = len(vendas) +1
     item.produto = item_request.produto
     item.quantidade = item_request.quantidade
     item.valor = item_request.valor
@@ -59,7 +59,7 @@ async def create_item(item_request: ItemRequest):
 
 
 @app.put('/items/{item_id}')
-async def update_item(item_id: UUID, item_request: ItemRequest):
+async def update_item(item_id: int, item_request: ItemRequest):
     item = Item()
     for key, item in enumerate(vendas):
         if item_id == item.id:
@@ -75,7 +75,7 @@ async def update_item(item_id: UUID, item_request: ItemRequest):
 
 
 @app.delete('/items/{item_id}')
-async def delete(item_id: UUID,):
+async def delete(item_id: int,):
     for key, item in enumerate(vendas):
         if item_id == item.id:
             return vendas.pop(key)
@@ -85,4 +85,4 @@ async def delete(item_id: UUID,):
 
 
 if __name__ =='__main__':
-    uvicorn.run(app)
+    uvicorn.run('main:app', reload=True)
